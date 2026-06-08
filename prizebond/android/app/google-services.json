@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "466460261581",
+    "project_id": "prize-bond-9e3a3",
+    "storage_bucket": "prize-bond-9e3a3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466460261581:android:af53d1134dd23e21d2fd84",
+        "android_client_info": {
+          "package_name": "com.prizebond"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbmJyng2ZSwUv_PDIPDB662m9JivRmV_U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

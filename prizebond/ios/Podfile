@@ -1,0 +1,58 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+def node_require(script)
+  # Resolve script with node to allow for hoisting
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
+
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
+
+setup_permissions([
+  'Notifications',
+  'LocationAccuracy',
+  'LocationAlways',
+  'LocationWhenInUse',
+  'Microphone'
+])
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+# Required for Firebase Swift pods to work properly
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
+
+target 'prizebond' do
+  config = use_native_modules!
+  
+  # Firebase pods - no need for modular_headers with use_frameworks!
+  pod 'Firebase/Auth'
+  pod 'Firebase/Messaging'
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+   post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+    
+    # Fix for Swift/ObjC interop in Firebase
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      end
+    end
+  end
+end
